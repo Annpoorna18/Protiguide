@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtiGuide</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+    }
+    header h1 {
+      font-size: 26px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .profile {
+      width: 40px;
+      height: 40px;
+      background: #f97316;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .page {
+      min-height: calc(100vh - 60px);
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: "Poppins", sans-serif;
+    }
+    .btn {
+      display: inline-block;
+      margin: 6px 4px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: 0.2s;
+      font-family: "Poppins", sans-serif;
+    }
+    .btn-blue { background: #2563eb; color: white; }
+    .btn-blue:hover { background: #1d4ed8; }
+    .btn-green { background: #16a34a; color: white; }
+    .btn-green:hover { background: #15803d; }
+    .btn-red { background: #dc2626; color: white; }
+    .btn-red:hover { background: #b91c1c; }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    nav button {
+      background: none;
+      border: none;
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+      font-family: "Poppins", sans-serif;
+    }
+    nav button.active {
+      color: #2563eb;
+      font-weight: bold;
+    }
+    /* Page-specific backgrounds */
+    #homePage { background: #f0f9ff; }
+    #budgetPage { background: #fef9c3; }
+    #mealsPage { background: #ecfdf5; }
+    #weeklyPage { background: #faf5ff; }
+    #loginPage { background: linear-gradient(135deg, #2563eb, #9333ea); color: white; }
+    #loginCard {
+      max-width: 350px;
+      margin: 100px auto;
+      background: white;
+      color: black;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    #loginCard h2 { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+  <div id="content"></div>
+
+  <nav style="display:none;">
+    <button id="homeBtn" class="active">Home</button>
+    <button id="budgetBtn">Budget</button>
+    <button id="mealsBtn">Meals</button>
+    <button id="weeklyBtn">Weekly</button>
+  </nav>
+
+  <script>
+    let user = {
+      name: "",
+      age: 0,
+      weight: 0,
+      height: 0,
+      diet: "Veg"
+    };
+    let proteinIntake = 0;
+    let dailyGoal = 75;
+
+    // LOGIN PAGE
+    function showLogin() {
+      document.getElementById("content").innerHTML = `
+        <div id="loginPage" class="page">
+          <div id="loginCard">
+            <h2>Welcome to ProtiGuide</h2>
+            <input type="text" id="name" placeholder="Name" />
+            <input type="number" id="age" placeholder="Age" />
+            <input type="number" id="weight" placeholder="Weight (kg)" />
+            <input type="number" id="height" placeholder="Height (cm)" />
+            <select id="diet">
+              <option>Veg</option>
+              <option>Non-Veg</option>
+            </select>
+            <button class="btn btn-blue" onclick="saveUser()">Continue</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveUser() {
+      user.name = document.getElementById("name").value;
+      user.age = document.getElementById("age").value;
+      user.weight = document.getElementById("weight").value;
+      user.height = document.getElementById("height").value;
+      user.diet = document.getElementById("diet").value;
+
+      if (!user.name || !user.age || !user.weight || !user.height) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      // Show Home after login
+      document.querySelector("nav").style.display = "flex";
+      showHome();
+      alert(`Hello ${user.name}! You are logged in with ${user.diet} preference.`);
+    }
+
+    // HOME PAGE
+    function showHome() {
+      document.getElementById("content").innerHTML = `
+        <div id="homePage" class="page">
+          <header>
+            <h1>Hi, ${user.name} 👋</h1>
+            <div class="profile">${user.name[0] || "U"}</div>
+          </header>
+          <div class="card">
+            <h2>Today's Protein Tracker</h2>
+            <p><b>Current Intake:</b> ${proteinIntake}g / ${dailyGoal}g</p>
+            <button class="btn btn-green" onclick="logMeal()">Log Meal +10g</button>
+            <button class="btn btn-red" onclick="resetProgress()">Reset</button>
+            <button class="btn btn-blue" onclick="suggestGoal()">Suggest Goal</button>
+          </div>
+          <div class="card">
+            <h2>Quick Actions</h2>
+            <button class="btn btn-green">Track Water 💧</button>
+            <button class="btn btn-blue">Add Exercise 🏋️</button>
+            <button class="btn btn-red">Clear Data ❌</button>
+          </div>
+        </div>
+      `;
+      setActive("homeBtn");
+    }
+
+    function suggestGoal() {
+      if (user.weight > 0) {
+        dailyGoal = Math.round(user.weight * 1.2);
+        alert(`Your suggested daily protein goal is ${dailyGoal}g`);
+        showHome();
+      }
+    }
+    function logMeal() {
+      proteinIntake += 10;
+      if (proteinIntake > dailyGoal) proteinIntake = dailyGoal;
+      showHome();
+    }
+    function resetProgress() {
+      proteinIntake = 0;
+      showHome();
+    }
+
+    // BUDGET PAGE
+    function showBudget() {
+      document.getElementById("content").innerHTML = `
+        <div id="budgetPage" class="page">
+          <header><h1>Budget</h1><div class="profile">₹</div></header>
+          <div class="card">
+            <p>Breakfast: Paneer Paratha – ₹40</p>
+            <p>Lunch: Chana Masala – ₹60</p>
+            <p>Dinner: Dal Fry – ₹50</p>
+            <hr>
+            <p><b>Total:</b> ₹150</p>
+          </div>
+        </div>
+      `;
+      setActive("budgetBtn");
+    }
+
+    // MEALS PAGE
+    function showMeals() {
+      document.getElementById("content").innerHTML = `
+        <div id="mealsPage" class="page">
+          <header><h1>Meals</h1><div class="profile">🍲</div></header>
+          <div class="card">
+            <button class="btn btn-blue">Vegetarian</button>
+            <button class="btn btn-green">Non-Veg</button>
+            <hr>
+            <p><b>Paneer Tikka Masala</b> – 22g protein – ₹70</p>
+            <p><b>Chana Masala</b> – 18g protein – ₹60</p>
+            <p><b>Dal Tadka</b> – 15g protein – ₹50</p>
+          </div>
+        </div>
+      `;
+      setActive("mealsBtn");
+    }
+
+    // WEEKLY PAGE
+    function showWeekly() {
+      document.getElementById("content").innerHTML = `
+        <div id="weeklyPage" class="page">
+          <header><h1>Weekly</h1><div class="profile">📊</div></header>
+          <div class="card">
+            <p>Mon: 60g / 75g</p>
+            <p>Tue: 70g / 75g</p>
+            <p>Wed: 55g / 75g</p>
+            <p>Thu: 75g / 75g</p>
+            <p>Fri: 65g / 75g</p>
+            <p>Sat: 80g / 75g</p>
+            <p>Sun: 68g / 75g</p>
+          </div>
+        </div>
+      `;
+      setActive("weeklyBtn");
+    }
+
+    // Active nav button
+    function setActive(id) {
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    // Event Listeners
+    document.getElementById("homeBtn").addEventListener("click", showHome);
+    document.getElementById("budgetBtn").addEventListener("click", showBudget);
+    document.getElementById("mealsBtn").addEventListener("click", showMeals);
+    document.getElementById("weeklyBtn").addEventListener("click", showWeekly);
+
+    // Start with login page
+    showLogin();
+  </script>
+
+</body>
+</html>
